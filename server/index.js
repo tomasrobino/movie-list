@@ -2,7 +2,6 @@ require("dotenv").config({path: "../.env"});
 const mysql = require("mysql2/promise");
 const express = require("express");
 const app = express();
-const port = 8000;
 
 console.log(process.env.HOST)
 
@@ -11,8 +10,8 @@ async function server() {
         res.send("");
     });
     
-    app.listen(port, () => {
-        console.log("Server listening on port "+port);
+    app.listen(process.env.PORT, () => {
+        console.log("Server listening on port "+process.env.PORT);
     });
     
     const connection = await mysql.createConnection({
@@ -24,7 +23,7 @@ async function server() {
     
     try {
         const [results] = await connection.query(
-            'select * from list'
+            'select * from '+process.env.TABLE
         );
         console.log(results);
     } catch (err) {
