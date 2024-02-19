@@ -1,3 +1,7 @@
+import dotenv from "dotenv";
+import http from "node:http"
+
+dotenv.config({path: "../.env"});
 import { select } from "@inquirer/prompts";
 console.log("MOVIE LIST");
 const answer = await select({
@@ -25,3 +29,16 @@ const answer = await select({
         }
     ]
 });
+switch (answer) {
+    case "list":        
+        fetch("http://"+process.env.HOST+":"+process.env.PORT+"/api").then(res => res.json()).then(res => console.log(res));
+        break;
+    case "insert":
+        break;
+    case "remove":
+        break;
+    case "modify":
+        break;
+    default:
+        break;
+}
