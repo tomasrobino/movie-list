@@ -14,13 +14,24 @@ async function server() {
     });
 
     app.get("/api", async (req, res) => {
-        try {
-            const [results] = await connection.query(
-                'select * from '+process.env.TABLE
-            );
-            res.send(results);
-        } catch (err) {
-            console.log(err);
+        if (req.query.hasOwnProperty("title")) {
+            try {
+                const [results] = await connection.query(
+                    'select * from '+process.env.TABLE+` where name="${req.query.title}" and release_year="${req.query.year}"`
+                );
+                res.send(results);
+            } catch (err) {
+                console.log(err);
+            }
+        } else {
+            try {
+                const [results] = await connection.query(
+                    'select * from '+process.env.TABLE
+                );
+                res.send(results);
+            } catch (err) {
+                console.log(err);
+            }
         }
     });
 

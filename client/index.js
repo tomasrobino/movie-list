@@ -70,35 +70,49 @@ while (exit) {
                     return 0;
                 } else return null;
             }
-            await fetch(`http://${process.env.HOST}:${process.env.PORT}/api`, { 
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    title: await input({message: "Enter the title", validate: (value) => {
-                        if (value !== "") {
-                            return true;
-                        } else {
-                            "Please enter a title"
-                        }
-                    }}),
-                    year: await input({message: "Enter the release year", default: "", validate: (value) => {
-                        const y = parseFloat(value);
-                        if (value === "" || (Number.isInteger(y) && y > 1800)) {
-                            return true;
-                        } else {
-                            "Please enter a valid year"
-                        }
-                    }}),
-                    rating: await input({message: "Enter the rating, from 0 to 10", validate: (value) => {
-                        if (value === "" || (!isNaN(value) && value >= 0 && value <= 10)) {
-                            return true;
-                        } else {
-                            "Please enter a valid rating"
-                        }
-                    }}),
-                    watched: await watch()
-                })
-            });
+
+            let retry = true;
+            while (retry) {
+                const title = await input({message: "Enter the title", validate: (value) => {
+                    if (value !== "") {
+                        return true;
+                    } else {
+                        "Please enter a title"
+                    }
+                }})
+                const year = await input({message: "Enter the release year", default: "", validate: (value) => {
+                    const y = parseFloat(value);
+                    if (value === "" || (Number.isInteger(y) && y > 1800)) {
+                        return true;
+                    } else {
+                        "Please enter a valid year"
+                    }
+                }})
+                const rating = await input({message: "Enter the rating, from 0 to 10", validate: (value) => {
+                    if (value === "" || (!isNaN(value) && value >= 0 && value <= 10)) {
+                        return true;
+                    } else {
+                        "Please enter a valid rating"
+                    }
+                }})
+                const watched = await watch()
+
+                const res = await fetch(`http://${process.env.HOST}:${process.env.PORT}/api?title=${title}&year=${year}`).then(res => res.json()).then(res => res);
+
+                if (res.length === 0) {
+                    await fetch(`http://${process.env.HOST}:${process.env.PORT}/api`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            title: title,
+                            year: year,
+                            rating: rating,
+                            watched: watched
+                        })
+                    });
+                    retry = false;
+                } else console.log("Movie already exists, please try again");
+            }
             break;
         case "remove":
             break;
