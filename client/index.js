@@ -37,7 +37,23 @@ while (exit) {
     });
     switch (answer) {
         case "list":        
-            await fetch(`http://${process.env.HOST}:${process.env.PORT}/api`).then(res => res.json()).then(res => console.log(res));
+            await fetch(`http://${process.env.HOST}:${process.env.PORT}/api`).then(res => res.json()).then(res => {
+                res.forEach(element => {
+                    console.log("Title: "+element.name);
+                    if (element.rating === null) {
+                        console.log("Unknown");
+                    } else console.log("Rating: "+element.rating);
+                    if (element.release_year === null) {
+                        console.log("Unknown");
+                    } else console.log("Release year: "+element.release_year);
+                    if (element.watched === null) {
+                        console.log("Unknown");
+                    } else if (element.watched === 1) {
+                        console.log("Watched: Yes")
+                    } else console.log("Watched: No");
+                    console.log("-----------------");
+                });
+            });
             break;
         case "insert":
             async function watch() {
