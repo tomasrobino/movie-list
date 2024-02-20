@@ -71,8 +71,8 @@ while (exit) {
                 } else return null;
             }
 
-            let retry = true;
-            while (retry) {
+            let reinsert = true;
+            while (reinsert) {
                 const title = await input({message: "Enter the title", validate: (value) => {
                     if (value !== "") {
                         return true;
@@ -110,11 +110,45 @@ while (exit) {
                             watched: watched
                         })
                     });
-                    retry = false;
+                    reinsert = false;
+                    console.log("Addition successful");
                 } else console.log("Movie already exists, please try again");
             }
             break;
         case "remove":
+            let reremove = true;
+            while (reremove) {
+                const title = await input({message: "Enter the title", validate: (value) => {
+                    if (value !== "") {
+                        return true;
+                    } else {
+                        "Please enter a title"
+                    }
+                }})
+                const year = await input({message: "Enter the release year", default: "", validate: (value) => {
+                    const y = parseFloat(value);
+                    if (value === "" || (Number.isInteger(y) && y > 1800)) {
+                        return true;
+                    } else {
+                        "Please enter a valid year"
+                    }
+                }})
+
+                const res = await fetch(`http://${process.env.HOST}:${process.env.PORT}/api?title=${title}&year=${year}`).then(res => res.json()).then(res => res);
+
+                if (res.length !== 0) {
+                    await fetch(`http://${process.env.HOST}:${process.env.PORT}/api`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            title: title,
+                            year: year
+                        })
+                    });
+                    reremove = false;
+                    console.log("Removal successful");
+                } else console.log("Movie doesn't exist, please try again");
+            }
             break;
         case "modify":
             break;

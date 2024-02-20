@@ -36,14 +36,26 @@ async function server() {
     });
 
     app.post("/api", async (req, res) => {
-        try {
-            await connection.query(
-                `insert into ${process.env.TABLE}(name, release_year, rating, watched) values("${req.body.title}", ${req.body.year}, ${req.body.rating}, ${req.body.watched})`
-            )
-            console.log("insert done")
-            res.send("insert done");
-        } catch (err) {
-            console.log(err);
+        if (req.body.rating !== undefined) {
+            try {
+                await connection.query(
+                    `insert into ${process.env.TABLE}(name, release_year, rating, watched) values("${req.body.title}", ${req.body.year}, ${req.body.rating}, ${req.body.watched})`
+                )
+                console.log("insert done")
+                res.send("insert done");
+            } catch (err) {
+                console.log(err);
+            }
+        } else {
+            try {
+                await connection.query(
+                    `delete from ${process.env.TABLE} where name="${req.body.title}" and release_year=${req.body.year}`
+                )
+                console.log("removal done")
+                res.send("removal done");
+            } catch (err) {
+                console.log(err);
+            }
         }
     })
     
