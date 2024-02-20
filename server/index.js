@@ -46,6 +46,22 @@ async function server() {
             } catch (err) {
                 console.log(err);
             }
+        } else if (req.body.field !== undefined) {
+            try {
+                if (isNaN(req.body.answer)) {
+                    await connection.query(
+                        `update ${process.env.TABLE} set ${req.body.field} = "${req.body.answer}" where name="${req.body.title}" and release_year=${req.body.year}`
+                    );
+                } else {
+                    await connection.query(
+                        `update ${process.env.TABLE} set ${req.body.field} = ${req.body.answer} where name="${req.body.title}" and release_year=${req.body.year}`
+                    );
+                }
+                console.log("removal done")
+                res.send("removal done");
+            } catch (err) {
+                console.log(err);
+            }
         } else {
             try {
                 await connection.query(
